@@ -289,3 +289,7 @@ console.log("7️⃣  Hello from the top level code")
 4️⃣  Timer 2 finished - 1 second after I/O & 6️⃣
 5️⃣  Timer 3 finished - 3 seconds after I/O & 6️⃣
 ```
+
+# 📚 Lecture 034: Events and Event-Driven Architecture
+
+<img src="./img/section04-lecture 034-001.png">
