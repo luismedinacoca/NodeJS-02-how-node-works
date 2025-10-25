@@ -432,3 +432,121 @@ server.listen(8000, "127.0.0.1", () => {
 > open a browser with **`http://localhost:8000`**:
 
 <img src="./img/section04-lecture035-004.png">
+
+
+## 📚 Lecture 036: Introduction to Streams
+
+<img src="./img/section04-lecture036-001.png">
+<img src="./img/section04-lecture036-002.png">
+
+## 📚 Lecture 037: Streams in Practice
+
+### 1. Create the **`streams.js`** file - first solution:
+```js
+// Import the File System module to handle file operations
+const fs = require('fs'); 
+// Import HTTP module and create a basic HTTP server
+const server = require('http').createServer(); 
+
+// Set up event listener for incoming HTTP requests
+server.on('request', (req, res) => {
+  // ******* SOLUTION 01: Basic file reading and serving *******
+  // This method reads the entire file into memory before sending it
+  // Not suitable for large files or high traffic (blocks the event loop)
+  fs.readFile("test-file.txt", (err, data) => {
+    // Handle potential errors (e.g., file not found, permissions)
+    if(err) console.log(err);
+    // Send the file content as response and end the connection
+    res.end(data);
+  });
+});
+
+// Start the server on port 8000 and IP 127.0.0.1 (localhost)
+server.listen(8000, "127.0.0.1", () => {
+  console.log('Listening to requests on port 8000... ⏰');
+});
+```
+
+> Best for: Small files (< 100MB), low traffic applications
+
+
+### 2. Second solution using stream:
+```js
+// Import the File System module to handle file operations
+const fs = require('fs'); 
+// Import HTTP module and create a basic HTTP server
+const server = require('http').createServer(); 
+
+// Set up event listener for incoming HTTP requests
+server.on('request', (req, res) => {
+  // SOLUTION 02: Using Streams for better memory efficiency
+  // Create a readable stream to read the file in chunks
+  // This is more efficient than loading the entire file into memory at once
+  const readable = fs.createReadStream('test-file.txt');
+  
+  // Event listener for when data chunks are available from the file
+  readable.on('data', (chunk) => {
+    // Write each chunk of data to the HTTP response
+    // This sends data to the client as it's being read from the file
+    res.write(chunk);
+  });
+  
+  // Event listener for when the file reading is complete
+  readable.on('end', () => {
+    // End the HTTP response after all data has been sent
+    res.end();
+  });
+  
+  // Note: Missing error handling for the readable stream
+  // If the file doesn't exist or has permission issues, this will crash
+  
+  // POTENTIAL ISSUE: Backpressure
+  // If the response can't send data as fast as we're reading from the file,
+  // it can lead to memory buildup and performance problems
+})
+
+// Start the server on port 8000 and IP 127.0.0.1 (localhost)
+server.listen(8000, "127.0.0.1", () =>{
+  console.log('Listening to requests on port 8000... ⏰');
+});
+```
+
+Adding error handler:
+```js
+  readable.on('error', (err) => {
+    console.log(err);
+    res.statusCode = 500;
+    res.end('Error: File not found');
+  });
+```
+
+> reading **`testj-file.txt`**:
+<img src="./img/section04-lecture037-001.png">
+
+> Issue: If res.write() returns false (backpressure), we should pause the readable stream
+
+### 3. ReadStream with **`pipe`**:
+```js
+const fs = require('fs'); 
+const server = require('http').createServer(); 
+server.on('request', (req, res) => {
+  //solution 03:
+  const readable = fs.createReadStream("test-file.txt");
+  readable.pipe(res);
+  // readableSource.pipe(writeableDestination)
+})
+server.listen(8000, "127.0.0.1", () =>{
+  console.log('Listening to requests on port 8000... ⏰');
+})
+```
+
+### 4. Comparative Table
+
+| Solution | PROS | CONS | Why Move to Next Solution |
+|----------|------|------|---------------------------|
+| **Solution 01**<br>`fs.readFile()` | • Simple to implement<br>• Easy error handling<br>• Good for small files | • **Loads entire file into memory**<br>• Blocks event loop for large files<br>• High memory usage<br>• Can crash server with large files | Memory inefficiency and scalability issues with large files or multiple concurrent requests |
+| **Solution 02**<br>`createReadStream()` with events | • **Memory efficient** (streams data in chunks)<br>• Non-blocking<br>• Good for large files<br>• Can handle backpressure manually | • **Manual backpressure management required**<br>• More complex code<br>• Risk of memory buildup if response is slow<br>• Multiple event listeners to manage | Backpressure handling is complex and error-prone; manual stream management increases code complexity |
+| **Solution 03**<br>`pipe()` method | • **Automatic backpressure handling**<br>• Most elegant solution<br>• Memory efficient<br>• Handles flow control automatically<br>• Less code to maintain | • Limited control over data flow<br>• Error handling must be set up on both streams<br>• Less flexibility for data transformation | Provides all benefits of streaming with automatic backpressure management and cleaner code |
+
+
+## 📚 Lecture 0
