@@ -549,4 +549,13 @@ server.listen(8000, "127.0.0.1", () =>{
 | **Solution 03**<br>`pipe()` method | • **Automatic backpressure handling**<br>• Most elegant solution<br>• Memory efficient<br>• Handles flow control automatically<br>• Less code to maintain | • Limited control over data flow<br>• Error handling must be set up on both streams<br>• Less flexibility for data transformation | Provides all benefits of streaming with automatic backpressure management and cleaner code |
 
 
+## 📚 Lecture 038: How Requiring Modules Really Works
+
+<img src="./img/section04-lecture038-001.png">
+<img src="./img/section04-lecture038-002.png">
+<img src="./img/section04-lecture038-003.png">
+<img src="./img/section04-lecture038-004.png">
+<img src="./img/section04-lecture038-005.png">
+
+
 ## 📚 Lecture 0
