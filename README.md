@@ -557,5 +557,68 @@ server.listen(8000, "127.0.0.1", () =>{
 <img src="./img/section04-lecture038-004.png">
 <img src="./img/section04-lecture038-005.png">
 
+## 📚 Lecture 039: Requiring Modules in Practice
+
+### 1. create **`modules.js`** file:
+```js
+console.log(arguments);
+```
+
+#### 1. Execute from terminal:
+```bash
+node modules.js
+```
+
+#### 2. Outcome:
+<img src="./img/section04-lecture039-001.png">
+
+> In cacse you export a module:
+<img src="./img/section04-lecture039-002.png">
+
+
+### 2. Export/import data from different module:
+<img src="./img/section04-lecture039-003.png">
+
+### 3. Create new **`test-module-2.js`** file:
+```js
+exports.add = (a, b) => a + b;
+exports.subtract = (a, b) => a - b;
+exports.multiply = (a, b) => a * b;
+exports.divide = (a, b) => a / b;
+```
+
+Now update from **`modules.js`**:
+```js
+const { add, multiply } = require('./test-module-2');
+console.log("from test-module-2: add(2, 5) = ", add(2, 5));
+console.log("from test-module-2: multiply(2, 5) = ", multiply(2, 5));
+```
+
+Run:
+```bash
+node modules.js
+```
+<img src="./img/section04-lecture039-004.png">
+
+### 4. Create **`test-module-3.js`** file:
+```js
+console.log("Hello from the module");
+module.exports = () => console.log("Log this beautiful text 😍");
+```
+
+#### Meanwhile in **`modules.js`** file:
+```js
+require('./test-module-3')();
+require('./test-module-3')();
+require('./test-module-3')();
+```
+
+#### Execute in the terminal:
+```bash
+node modules.js
+```
+
+#### Outcome:
+<img src="./img/section04-lecture039-005.png">
 
 ## 📚 Lecture 0
